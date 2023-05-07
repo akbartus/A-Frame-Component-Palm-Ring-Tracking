@@ -4,7 +4,7 @@ let drawingUtilsScript = document.createElement("script");
 let handsScript = document.createElement("script");
 // Set the src attribute to the URL of the external JavaScript file
 cameraUtilsScript.src =
-  "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
+  "js/camera_utils.js";
 drawingUtilsScript.src =
   "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
 handsScript.src = "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
