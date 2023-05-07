@@ -98,7 +98,7 @@ AFRAME.registerComponent("palm-tracking", {
         if (!coordinates) coordinates = resetCoords;
         let x = coordinates.x - 0.5;
         let y = -coordinates.y + 0.5;
-        let z = coordinates.z - 0.5;
+        let z = -0.5 //coordinates.z - 0.5;
         box.setAttribute("position", { x, y, z });
       }
     }
@@ -194,9 +194,10 @@ AFRAME.registerComponent("palm-tracking", {
             // Depending on rotation show front and back of a ring img
             if (document.querySelector("#myModel").getAttribute("rotation").x < -110) {
               document.querySelector("#myModel").setAttribute("src", "3d/ring.png");
-            } else if (document.querySelector("#myModel").getAttribute("rotation").x > -110) {
-              document.querySelector("#myModel").setAttribute("src", "3d/ring_back.png");
             }
+            // else if (document.querySelector("#myModel").getAttribute("rotation").x > -110) {
+            //   document.querySelector("#myModel").setAttribute("src", "3d/ring_back.png");
+            // }
             
           }
 
@@ -207,10 +208,10 @@ AFRAME.registerComponent("palm-tracking", {
               // Set the position of the entity with ID "myModel" to be at the same position as landmark[14] of the left hand
               let x = results.multiHandLandmarks[0][lindex].x - 0.5;
               let y = -results.multiHandLandmarks[0][lindex].y + 0.5;
-              let z = results.multiHandLandmarks[0][lindex].z - 0.5;
+              let z = -0.5 //results.multiHandLandmarks[0][lindex].z - 0.5;
               document
                 .querySelector("#myModel")
-                .setAttribute("position", `${x} ${y - 0.05} ${z}`);
+                .setAttribute("position", `${x+0.02} ${y - 0.05} ${z}`);
               document.querySelector("#myModel").setAttribute("visible", true);
             } else {
               document.querySelector("#myModel").setAttribute("visible", false);
