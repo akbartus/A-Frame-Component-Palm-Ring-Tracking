@@ -71,7 +71,7 @@ AFRAME.registerComponent("palm-tracking", {
 
     function createBox(handIndex) {
       let box = document.createElement("a-box");
-      box.setAttribute("scale", "0.01 0.01 0.01"); // change here to disable boxes
+      box.setAttribute("scale", "0.00 0.00 0.00"); // change here to disable boxes
       el.appendChild(box);
       return box;
     }
