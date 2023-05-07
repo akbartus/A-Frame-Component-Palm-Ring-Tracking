@@ -4,6 +4,7 @@ let drawingUtilsScript = document.createElement("script");
 let handsScript = document.createElement("script");
 // Set the src attribute to the URL of the external JavaScript file
 cameraUtilsScript.src =
+  // "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js";
   "js/camera_utils.js";
 drawingUtilsScript.src =
   "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
@@ -19,8 +20,8 @@ AFRAME.registerComponent("palm-tracking", {
   },
   init: function () {
     let el = this.el;
-      let container = document.createElement("div");
-      let lindex = this.data.landmarkIndex;
+    let container = document.createElement("div");
+    let lindex = this.data.landmarkIndex;
     container.className = "container";
     let videoElement = document.createElement("video");
     videoElement.style.display = "none";
@@ -31,8 +32,8 @@ AFRAME.registerComponent("palm-tracking", {
     let canvasElement = document.createElement("canvas");
     let canvasCtx = canvasElement.getContext("2d");
     canvasElement.className = "output_canvas";
-    canvasElement.width = 700;
-    canvasElement.height = 700;
+    canvasElement.width = 800;
+    canvasElement.height = 800;
 
     container.appendChild(videoElement);
     container.appendChild(canvasElement);
@@ -55,6 +56,8 @@ AFRAME.registerComponent("palm-tracking", {
       onFrame: async () => {
         await hands.send({ image: videoElement });
       },
+      width: 800,
+      height: 800,
     });
     camera.start();
 
@@ -71,7 +74,7 @@ AFRAME.registerComponent("palm-tracking", {
 
     function createBox(handIndex) {
       let box = document.createElement("a-box");
-      box.setAttribute("scale", "0.00 0.00 0.00"); // change here to disable boxes
+      box.setAttribute("scale", "0.01 0.01 0.01"); // change here to disable boxes
       el.appendChild(box);
       return box;
     }
@@ -89,13 +92,15 @@ AFRAME.registerComponent("palm-tracking", {
       }
     }
 
-    // Assign new coordinates
+    // Assign new coordinates to palm boxes
     function assignCoordinates(box, coordinates) {
-      if (!coordinates) coordinates = resetCoords;
-      let x = coordinates.x - 0.5;
-      let y = -coordinates.y + 0.5;
-      let z = coordinates.z - 0.5;
-      box.setAttribute("position", { x, y, z });
+      if (AFRAME.utils.device.isMobile()) {
+        if (!coordinates) coordinates = resetCoords;
+        let x = coordinates.x - 0.5;
+        let y = -coordinates.y + 0.5;
+        let z = coordinates.z - 0.5;
+        box.setAttribute("position", { x, y, z });
+      }
     }
 
     // Reset coordinates
@@ -161,6 +166,18 @@ AFRAME.registerComponent("palm-tracking", {
         canvasElement.height
       );
 
+      //Drawing landmarks
+      // if (results.multiHandLandmarks) {
+      //   for (const landmarks of results.multiHandLandmarks) {
+      //     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+      //       color: '#00FF00', lineWidth: 2 // color and line width for connectors
+      //     });
+      //     drawLandmarks(canvasCtx, landmarks, {
+      //       color: '#FF0000', lineWidth: 0.2 // color and line width for hand landmarks
+      //     });
+      //   }
+      // }
+
       if (results.multiHandLandmarks[0]) {
         if (results.multiHandedness[0].label == "Left") {
           // Compute the hand rotation and apply it to the entity with ID "myModel"
@@ -168,51 +185,36 @@ AFRAME.registerComponent("palm-tracking", {
           document
             .querySelector("#myModel")
             .setAttribute(
-              "rotation",
-              `${rotation.x.toFixed(2)} ${rotation.y.toFixed(
-                2
-              )} ${rotation.z.toFixed(2)}`
-            ); // Update the positions of the hand boxes based on the landmark data
+              "rotation",`${rotation.x.toFixed(2)} ${rotation.y.toFixed(2)} ${rotation.z.toFixed(2)}`
+            );
 
           // Check if it is GLTF file or Image
+          
           if (!document.querySelector("#myModel").getAttribute("gltf-model")) {
             // Depending on rotation show front and back of a ring img
-            if (
-              document.querySelector("#myModel").getAttribute("rotation").x <
-              -80
-            ) {
-              document
-                .querySelector("#myModel")
-                .setAttribute("src", "3d/ring.png");
-            } else if (
-              document.querySelector("#myModel").getAttribute("rotation").x >
-              -100
-            ) {
-              document
-                .querySelector("#myModel")
-                .setAttribute("src", "3d/ring_back.png");
+            if (document.querySelector("#myModel").getAttribute("rotation").x < -110) {
+              document.querySelector("#myModel").setAttribute("src", "3d/ring.png");
+            } else if (document.querySelector("#myModel").getAttribute("rotation").x > -110) {
+              document.querySelector("#myModel").setAttribute("src", "3d/ring_back.png");
             }
+            
           }
 
           setupHand(0, results.multiHandLandmarks[0]); // update left hand
           setupHand(1, results.multiHandLandmarks[1]); // update right hand
-
-          if (results.multiHandLandmarks[0]) {
-            // Set the position of the entity with ID "myModel" to be at the same position as landmark[14] of the left hand
-            // Change finger
-            // 6/10/14/18
-            let x =
-              results.multiHandLandmarks[0][lindex].x - 0.5;
-            let y =
-              -results.multiHandLandmarks[0][lindex].y + 0.5;
-            let z =
-              results.multiHandLandmarks[0][lindex].z - 0.5;
-            document
-              .querySelector("#myModel")
-              .setAttribute("position", `${x} ${y - 0.055} ${z}`);
-            document.querySelector("#myModel").setAttribute("visible", true);
-          } else {
-            document.querySelector("#myModel").setAttribute("visible", false);
+          if (AFRAME.utils.device.isMobile()) {
+            if (results.multiHandLandmarks[0]) {
+              // Set the position of the entity with ID "myModel" to be at the same position as landmark[14] of the left hand
+              let x = results.multiHandLandmarks[0][lindex].x - 0.5;
+              let y = -results.multiHandLandmarks[0][lindex].y + 0.5;
+              let z = results.multiHandLandmarks[0][lindex].z - 0.5;
+              document
+                .querySelector("#myModel")
+                .setAttribute("position", `${x} ${y - 0.05} ${z}`);
+              document.querySelector("#myModel").setAttribute("visible", true);
+            } else {
+              document.querySelector("#myModel").setAttribute("visible", false);
+            }
           }
         }
       } else {
