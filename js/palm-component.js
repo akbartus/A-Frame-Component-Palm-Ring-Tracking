@@ -17,11 +17,13 @@ document.head.appendChild(handsScript);
 AFRAME.registerComponent("palm-tracking", {
   schema: {
     landmarkIndex: { type: "number", default: 14 },
+    palmHelper: { type: "boolean", default: false }
   },
   init: function () {
     let el = this.el;
     let container = document.createElement("div");
     let lindex = this.data.landmarkIndex;
+    let palmHelperBool = this.data.palmHelper;
     container.className = "container";
     let videoElement = document.createElement("video");
     videoElement.style.display = "none";
@@ -74,7 +76,13 @@ AFRAME.registerComponent("palm-tracking", {
 
     function createBox(handIndex) {
       let box = document.createElement("a-box");
+      if(palmHelperBool == true){
       box.setAttribute("scale", "0.01 0.01 0.01"); // change here to disable boxes
+      }
+      else {
+        box.setAttribute("scale", "0 0 0");
+      }
+      
       el.appendChild(box);
       return box;
     }
@@ -211,7 +219,7 @@ AFRAME.registerComponent("palm-tracking", {
               let z = -0.5 //results.multiHandLandmarks[0][lindex].z - 0.5;
               document
                 .querySelector("#myModel")
-                .setAttribute("position", `${x+0.02} ${y - 0.05} ${z}`);
+                .setAttribute("position", `${x} ${y - 0.05} ${z}`);
               document.querySelector("#myModel").setAttribute("visible", true);
             } else {
               document.querySelector("#myModel").setAttribute("visible", false);
